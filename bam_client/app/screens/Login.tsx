@@ -1,7 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { API_URL_ANDROID, API_URL_WEB } from '@env'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
@@ -13,10 +14,12 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 
+	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
+
 	const handleLogin = async () => {
 		setLoading(true)
 		try {
-			const response = await fetch('http://127.0.0.1:4999/api/account/login', {
+			const response = await fetch(`${API_URL}/login`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

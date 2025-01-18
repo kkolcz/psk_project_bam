@@ -1,7 +1,8 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { API_URL_ANDROID, API_URL_WEB } from '@env'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
@@ -14,6 +15,8 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 
+	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
+
 	const handleRegister = async () => {
 		if (password !== confirmPassword) {
 			Alert.alert('Rejestracja nieudana', 'Hasła nie są zgodne')
@@ -22,7 +25,7 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 
 		setLoading(true)
 		try {
-			const response = await fetch('http://127.0.0.1:4999/api/account/register', {
+			const response = await fetch(`${API_URL}/register`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
