@@ -3,10 +3,25 @@ import React, { useState } from 'react'
 import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
 	setIsLogged: (value: boolean) => void
+}
+
+interface ILoginResponse {
+	username: string
+	token: string
+}
+
+const saveLoggedUser = async (username: string, token: string) => {
+	try {
+		await AsyncStorage.setItem('username', username)
+		await AsyncStorage.setItem('userToken', token)
+	} catch (error) {
+		console.error('Error saving token:', error)
+	}
 }
 
 const Login = ({ navigation, setIsLogged }: RouterProps) => {
@@ -27,13 +42,15 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 				body: JSON.stringify({ username: email, password: password }),
 			})
 
-			const data = await response.json()
+			const data: ILoginResponse = await response.json()
+			console.log(data)
 
 			if (response.ok) {
 				console.log('Login successful')
+				saveLoggedUser(data.username, data.token)
 				setIsLogged(true)
 			} else {
-				Alert.alert('Login failed', data.message || 'Invalid credentials')
+				Alert.alert('Login failed')
 			}
 		} catch (error) {
 			console.error('Error logging in:', error)

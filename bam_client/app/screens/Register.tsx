@@ -3,10 +3,25 @@ import React, { useState } from 'react'
 import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
 	setIsLogged: (value: boolean) => void
+}
+
+interface IRegisterResponse {
+	username: string
+	token: string
+}
+
+const saveRegisteredUser = async (username: string, token: string) => {
+	try {
+		await AsyncStorage.setItem('username', username)
+		await AsyncStorage.setItem('userToken', token)
+	} catch (error) {
+		console.error('Błąd podczas zapisywania tokenu:', error)
+	}
 }
 
 const Register = ({ navigation, setIsLogged }: RouterProps) => {
@@ -33,13 +48,14 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 				body: JSON.stringify({ username: email, password: password }),
 			})
 
-			const data = await response.json()
+			const data: IRegisterResponse = await response.json()
 
 			if (response.ok) {
-				console.log('Registration successful')
+				saveRegisteredUser(data.username, data.token)
+				console.log('Rejestracja udana')
 				setIsLogged(true)
 			} else {
-				Alert.alert('Rejestracja nieudana', data.message || 'Nieprawidłowe dane')
+				Alert.alert('Rejestracja nieudana')
 			}
 		} catch (error) {
 			console.error('Error registering:', error)
