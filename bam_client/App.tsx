@@ -17,14 +17,16 @@ const Stack = createStackNavigator()
 
 const InsideStack = createStackNavigator()
 
-function InsideLayout() {
+function InsideLayout({ setIsLogged }: { setIsLogged: (value: boolean) => void }) {
 	return (
 		<InsideStack.Navigator>
 			<InsideStack.Screen name='Home' component={Home} />
 			<InsideStack.Screen name='Documents' component={Documents} />
 			<InsideStack.Screen name='DocDetails' component={DocDetails as React.ComponentType<any>} />
 			<InsideStack.Screen name='AddShared' component={AddShared} />
-			<InsideStack.Screen name='Settings' component={Settings} />
+			<InsideStack.Screen name='Settings'>
+				{props => <Settings {...props} setIsLogged={setIsLogged} />}
+			</InsideStack.Screen>
 		</InsideStack.Navigator>
 	)
 }
@@ -91,7 +93,9 @@ export default function App() {
 		<NavigationContainer>
 			<Stack.Navigator initialRouteName={isLogged ? 'Inside' : 'Login'}>
 				{isLogged ? (
-					<Stack.Screen name='Inside' component={InsideLayout} options={{ headerShown: false }} />
+					<Stack.Screen name='Inside' options={{ headerShown: false }}>
+						{props => <InsideLayout {...props} setIsLogged={setIsLogged} />}
+					</Stack.Screen>
 				) : (
 					<>
 						<Stack.Screen name='Login'>{props => <Login {...props} setIsLogged={setIsLogged} />}</Stack.Screen>

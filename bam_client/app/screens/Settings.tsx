@@ -2,21 +2,24 @@ import { View, Text, TouchableOpacity, StyleSheet, Switch } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { NavigationProp } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
+	setIsLogged: (value: boolean) => void
 }
 
-const Settings = ({ navigation }: RouterProps) => {
+const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 	const [notificationsEnabled, setNotificationsEnabled] = useState(false)
 
 	const toggleNotifications = () => {
 		setNotificationsEnabled(previousState => !previousState)
 	}
 
-	const handleLogout = () => {
+	const handleLogout = async () => {
 		console.log('Wylogowano')
-		navigation.navigate('Login')
+		await AsyncStorage.removeItem('userToken')
+		setIsLogged(false)
 	}
 
 	return (
