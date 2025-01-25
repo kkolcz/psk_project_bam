@@ -1,12 +1,36 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native'
 import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { useAuth } from '../context/AuthContext'
+import { API_URL_ANDROID, API_URL_WEB } from '@env'
 
 const AddShared = () => {
 	const [code, setCode] = useState('')
 
-	const handleAddDocument = () => {
+	const { token } = useAuth()
+	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
+
+	const handleAddDocument = async () => {
 		console.log('Dodaj dokument z kodem:', code)
+		try {
+			const response = await fetch(`${API_URL}/files/shared/${code}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			})
+
+			if (response.ok) {
+				Alert.alert('Sukces', 'Dokument został dodany.')
+			} else {
+				const errorData = await response.json()
+				Alert.alert('Błąd', errorData.message || 'Wystąpił błąd podczas dodawania dokumentu.')
+			}
+		} catch (error) {
+			console.error('Error adding document:', error)
+			Alert.alert('Błąd', 'Wystąpił błąd podczas dodawania dokumentu. Spróbuj ponownie.')
+		}
 	}
 
 	return (

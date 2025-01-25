@@ -4,6 +4,7 @@ import { NavigationProp, RouteProp } from '@react-navigation/native'
 import * as FileSystem from 'expo-file-system'
 import * as MediaLibrary from 'expo-media-library'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
+import { useAuth } from '../context/AuthContext'
 
 interface RenderItem {
 	item: {
@@ -30,41 +31,45 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 	const { document } = route.params
 	const [isShared, setIsShared] = useState(document.isShared ? true : false)
 	const [link, setLink] = useState('')
+	const { token } = useAuth()
 
 	useEffect(() => {
 		console.log(document.isShared)
 		console.log(isShared)
 	}, [])
 
-	const handleShare = () => {
+	const handleShare = async () => {
 		setIsShared(!isShared)
 		console.log(isShared ? 'Przestań udostępniać' : 'Udostępnij')
+
+		try {
+			const response = await fetch(`${API_URL}/files/share/${document.id}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({}),
+			})
+
+			if (response.ok) {
+				const data = await response.json()
+				Alert.alert('Sukces', `Dokument został udostępniony. Access Code: ${data.accessCode}`)
+			} else {
+				const errorData = await response.json()
+				Alert.alert('Błąd', errorData.message || 'Wystąpił błąd podczas udostępniania dokumentu.')
+			}
+		} catch (error) {
+			console.error('Error sharing document:', error)
+			Alert.alert('Błąd', 'Wystąpił błąd podczas udostępniania dokumentu. Spróbuj ponownie.')
+		}
 	}
 
 	const handleDownload = async () => {
-		const uri = `${API_URL}'/files/download/'${document.id}`
-		if (Platform.OS === 'web') {
-			setLink(uri)
-			Alert.alert('Pobieranie zakończone', `Plik został pobrany: ${document.fileName}`)
-		} else {
-			try {
-				const { status } = await MediaLibrary.requestPermissionsAsync()
-				if (status !== 'granted') {
-					Alert.alert('Permission denied', 'Permission to access media library is required!')
-					return
-				}
+		const uri = `${API_URL}/files/download/${document.id}`
+		console.log('Download URI:', uri)
 
-				const fileUri = `${FileSystem.documentDirectory}${document.fileName}`
-				const { uri: downloadedUri } = await FileSystem.downloadAsync(uri, fileUri)
-
-				const asset = await MediaLibrary.createAssetAsync(downloadedUri)
-				await MediaLibrary.createAlbumAsync('Download', asset, false)
-				Alert.alert('Pobieranie zakończone', `Plik został pobrany do katalogu Download: ${asset.uri}`)
-			} catch (error) {
-				console.error('Error downloading file:', error)
-				Alert.alert('Błąd pobierania', 'Wystąpił błąd podczas pobierania pliku. Spróbuj ponownie.')
-			}
-		}
+		// DODAC LOGIKE POBIERANIA PLIKU
 	}
 
 	const handleDelete = () => {

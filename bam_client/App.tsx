@@ -12,18 +12,23 @@ import DocDetails from './app/screens/DocDetails'
 import AddShared from './app/screens/AddShared'
 import * as LocalAuthentication from 'expo-local-authentication'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { AuthProvider, useAuth } from './app/context/AuthContext'
+import SendDocument from './app/screens/SendDocument'
 
 const Stack = createStackNavigator()
 
 const InsideStack = createStackNavigator()
 
-function InsideLayout({ setIsLogged, token }: { setIsLogged: (value: boolean) => void; token: string }) {
+function InsideLayout({ setIsLogged }: { setIsLogged: (value: boolean) => void }) {
+	const { token } = useAuth()
+
 	return (
 		<InsideStack.Navigator>
 			<InsideStack.Screen name='Home' component={Home} />
 			<InsideStack.Screen name='Documents'>{props => <Documents {...props} token={token} />}</InsideStack.Screen>
 			<InsideStack.Screen name='DocDetails' component={DocDetails as React.ComponentType<any>} />
 			<InsideStack.Screen name='AddShared' component={AddShared} />
+			<InsideStack.Screen name='SendDocument' component={SendDocument} />
 			<InsideStack.Screen name='Settings'>
 				{props => <Settings {...props} setIsLogged={setIsLogged} />}
 			</InsideStack.Screen>
@@ -31,10 +36,10 @@ function InsideLayout({ setIsLogged, token }: { setIsLogged: (value: boolean) =>
 	)
 }
 
-export default function App() {
+function AppContent() {
 	const [isLogged, setIsLogged] = useState(false)
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
-	const [token, setToken] = useState('')
+	const { setToken } = useAuth()
 
 	useEffect(() => {
 		checkIsUserLogged()
@@ -91,12 +96,13 @@ export default function App() {
 			Alert.alert('An error occurred', error.message)
 		}
 	}
+
 	return (
 		<NavigationContainer>
 			<Stack.Navigator initialRouteName={isLogged ? 'Inside' : 'Login'}>
 				{isLogged ? (
 					<Stack.Screen name='Inside' options={{ headerShown: false }}>
-						{props => <InsideLayout {...props} setIsLogged={setIsLogged} token={token} />}
+						{props => <InsideLayout {...props} setIsLogged={setIsLogged} />}
 					</Stack.Screen>
 				) : (
 					<>
@@ -106,5 +112,13 @@ export default function App() {
 				)}
 			</Stack.Navigator>
 		</NavigationContainer>
+	)
+}
+
+export default function App() {
+	return (
+		<AuthProvider>
+			<AppContent />
+		</AuthProvider>
 	)
 }

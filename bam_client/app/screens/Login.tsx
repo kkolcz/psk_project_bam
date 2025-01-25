@@ -4,6 +4,7 @@ import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useAuth } from '../context/AuthContext'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
@@ -31,6 +32,8 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 
 	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
 
+	const { setToken } = useAuth()
+
 	const handleLogin = async () => {
 		setLoading(true)
 		console.log(`${API_URL}/account/login`)
@@ -40,6 +43,7 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 				headers: {
 					'Content-Type': 'application/json',
 				},
+				mode: 'cors',
 				body: JSON.stringify({ username: email, password: password }),
 			})
 
@@ -48,6 +52,7 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 
 			if (response.ok) {
 				console.log('Login successful')
+				setToken(data.token)
 				saveLoggedUser(data.username, data.token)
 				setIsLogged(true)
 			} else {

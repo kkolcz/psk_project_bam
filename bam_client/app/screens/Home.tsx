@@ -33,7 +33,7 @@ const Home = ({ navigation }: RouterProps) => {
 				<Icon name='file' size={20} color='#fff' />
 				<Text style={styles.buttonText}>Moje dokumenty</Text>
 			</TouchableOpacity>
-			<TouchableOpacity style={styles.button} onPress={pickDocument}>
+			<TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SendDocument')}>
 				<Icon name='upload' size={20} color='#fff' />
 				<Text style={styles.buttonText}>Prześlij dokument</Text>
 			</TouchableOpacity>
