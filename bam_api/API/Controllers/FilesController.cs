@@ -79,7 +79,7 @@ namespace API.Controllers
                 });
 
             var sharedWithUserFiles = context.SharedFiles
-                .Where(fs => fs.AccessedByUserId == UserId || fs.AccessedByUserId == null)
+                .Where(fs => fs.AccessedByUserId == UserId)
                 .Select(fs => new
                 {
                     fs.FileEntity.Id,
