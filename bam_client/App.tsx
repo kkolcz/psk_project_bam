@@ -17,11 +17,11 @@ const Stack = createStackNavigator()
 
 const InsideStack = createStackNavigator()
 
-function InsideLayout({ setIsLogged }: { setIsLogged: (value: boolean) => void }) {
+function InsideLayout({ setIsLogged, token }: { setIsLogged: (value: boolean) => void; token: string }) {
 	return (
 		<InsideStack.Navigator>
 			<InsideStack.Screen name='Home' component={Home} />
-			<InsideStack.Screen name='Documents' component={Documents} />
+			<InsideStack.Screen name='Documents'>{props => <Documents {...props} token={token} />}</InsideStack.Screen>
 			<InsideStack.Screen name='DocDetails' component={DocDetails as React.ComponentType<any>} />
 			<InsideStack.Screen name='AddShared' component={AddShared} />
 			<InsideStack.Screen name='Settings'>
@@ -34,6 +34,7 @@ function InsideLayout({ setIsLogged }: { setIsLogged: (value: boolean) => void }
 export default function App() {
 	const [isLogged, setIsLogged] = useState(false)
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
+	const [token, setToken] = useState('')
 
 	useEffect(() => {
 		checkIsUserLogged()
@@ -45,6 +46,7 @@ export default function App() {
 			if (token) {
 				authenticateUser()
 				setIsLogged(true)
+				setToken(token)
 			} else {
 				setIsLogged(false)
 			}
@@ -94,7 +96,7 @@ export default function App() {
 			<Stack.Navigator initialRouteName={isLogged ? 'Inside' : 'Login'}>
 				{isLogged ? (
 					<Stack.Screen name='Inside' options={{ headerShown: false }}>
-						{props => <InsideLayout {...props} setIsLogged={setIsLogged} />}
+						{props => <InsideLayout {...props} setIsLogged={setIsLogged} token={token} />}
 					</Stack.Screen>
 				) : (
 					<>

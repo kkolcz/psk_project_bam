@@ -1,7 +1,8 @@
-import { Text, View, FlatList, TouchableOpacity, StyleSheet } from 'react-native'
-import React from 'react'
+import { Text, View, FlatList, TouchableOpacity, StyleSheet, Platform } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { NavigationProp } from '@react-navigation/native'
+import { API_URL_ANDROID, API_URL_WEB } from '@env'
 
 const dummyDocuments = [
 	{
@@ -52,23 +53,57 @@ const dummyDocuments = [
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
+	token: string
 }
+
+// interface RenderItem {
+// 	item: {
+// 		id: string
+// 		title: string
+// 		name: string
+// 		date: string
+// 		time: string
+// 		type: string
+// 		owner: string
+// 		privacy: string
+// 		verification: string
+// 	}
+// }
 
 interface RenderItem {
 	item: {
 		id: string
-		title: string
-		name: string
-		date: string
-		time: string
-		type: string
-		owner: string
-		privacy: string
-		verification: string
+		fileName: string
+		isShared: string
 	}
 }
 
-const Documents = ({ navigation }: RouterProps) => {
+const Documents = ({ navigation, token }: RouterProps) => {
+	const [documents, setDocuments] = useState([])
+	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
+
+	useEffect(() => {
+		getFiles(token)
+	}, [])
+
+	const getFiles = async (token: string) => {
+		console.log(`${API_URL}/files`)
+		try {
+			const response = await fetch(`${API_URL}/files`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			})
+
+			const data = await response.json()
+			console.log(data)
+			setDocuments(data)
+		} catch (error) {
+			console.error('Error fetching documents:', error)
+		}
+	}
+
 	const getIconName = (fileName: string) => {
 		const extension = fileName.split('.').pop()
 		switch (extension) {
@@ -86,10 +121,10 @@ const Documents = ({ navigation }: RouterProps) => {
 
 	const renderItem = ({ item }: RenderItem) => (
 		<View style={styles.itemContainer}>
-			<Icon name={getIconName(item.name)} size={24} color='#FFFFFF' style={styles.icon} />
+			<Icon name={getIconName(item.fileName)} size={24} color='#FFFFFF' style={styles.icon} />
 			<View style={styles.textContainer}>
-				<Text style={styles.documentName}>{item.name}</Text>
-				<Text style={styles.documentStatus}>{item.privacy}</Text>
+				<Text style={styles.documentName}>{item.fileName}</Text>
+				<Text style={styles.documentStatus}>{item.isShared}</Text>
 			</View>
 			<TouchableOpacity
 				style={styles.detailsButton}
@@ -101,7 +136,7 @@ const Documents = ({ navigation }: RouterProps) => {
 
 	return (
 		<View style={styles.container}>
-			<FlatList data={dummyDocuments} renderItem={renderItem} keyExtractor={item => item.id} />
+			<FlatList data={documents} renderItem={renderItem} keyExtractor={item => item.id} />
 		</View>
 	)
 }

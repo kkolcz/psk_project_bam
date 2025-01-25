@@ -1,17 +1,16 @@
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Button, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { NavigationProp, RouteProp } from '@react-navigation/native'
+import * as FileSystem from 'expo-file-system'
+import * as MediaLibrary from 'expo-media-library'
+import { API_URL_ANDROID, API_URL_WEB } from '@env'
 
-interface Document {
-	id: string
-	title: string
-	name: string
-	date: string
-	time: string
-	type: string
-	owner: string
-	privacy: string
-	verification: string
+interface RenderItem {
+	item: {
+		id: string
+		fileName: string
+		isShared: string
+	}
 }
 
 interface RouterProps {
@@ -19,13 +18,53 @@ interface RouterProps {
 	route: RouteProp<{ params: { document: Document } }, 'params'>
 }
 
+interface Document {
+	id: number
+	title: string
+	fileName: string
+	isShared: string
+}
+
 const DocDetails = ({ navigation, route }: RouterProps) => {
+	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
 	const { document } = route.params
-	const [isShared, setIsShared] = useState(document.privacy === 'udostępnione')
+	const [isShared, setIsShared] = useState(document.isShared ? true : false)
+	const [link, setLink] = useState('')
+
+	useEffect(() => {
+		console.log(document.isShared)
+		console.log(isShared)
+	}, [])
 
 	const handleShare = () => {
 		setIsShared(!isShared)
 		console.log(isShared ? 'Przestań udostępniać' : 'Udostępnij')
+	}
+
+	const handleDownload = async () => {
+		const uri = `${API_URL}'/files/download/'${document.id}`
+		if (Platform.OS === 'web') {
+			setLink(uri)
+			Alert.alert('Pobieranie zakończone', `Plik został pobrany: ${document.fileName}`)
+		} else {
+			try {
+				const { status } = await MediaLibrary.requestPermissionsAsync()
+				if (status !== 'granted') {
+					Alert.alert('Permission denied', 'Permission to access media library is required!')
+					return
+				}
+
+				const fileUri = `${FileSystem.documentDirectory}${document.fileName}`
+				const { uri: downloadedUri } = await FileSystem.downloadAsync(uri, fileUri)
+
+				const asset = await MediaLibrary.createAssetAsync(downloadedUri)
+				await MediaLibrary.createAlbumAsync('Download', asset, false)
+				Alert.alert('Pobieranie zakończone', `Plik został pobrany do katalogu Download: ${asset.uri}`)
+			} catch (error) {
+				console.error('Error downloading file:', error)
+				Alert.alert('Błąd pobierania', 'Wystąpił błąd podczas pobierania pliku. Spróbuj ponownie.')
+			}
+		}
 	}
 
 	const handleDelete = () => {
@@ -39,25 +78,13 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 				Tytuł: <Text style={styles.value}>{document.title}</Text>
 			</Text>
 			<Text style={styles.label}>
-				Nazwa: <Text style={styles.value}>{document.name}</Text>
+				Nazwa: <Text style={styles.value}>{document.fileName}</Text>
 			</Text>
 			<Text style={styles.label}>
-				Data: <Text style={styles.value}>{document.date}</Text>
+				Typ pliku: <Text style={styles.value}>{document.fileName.split('.').pop()}</Text>
 			</Text>
 			<Text style={styles.label}>
-				Godzina: <Text style={styles.value}>{document.time}</Text>
-			</Text>
-			<Text style={styles.label}>
-				Typ: <Text style={styles.value}>{document.type}</Text>
-			</Text>
-			<Text style={styles.label}>
-				Właściciel: <Text style={styles.value}>{document.owner}</Text>
-			</Text>
-			<Text style={styles.label}>
-				Prywatność: <Text style={styles.value}>{document.privacy}</Text>
-			</Text>
-			<Text style={styles.label}>
-				Weryfikacja: <Text style={styles.value}>{document.verification}</Text>
+				Data: <Text style={styles.value}>{document.isShared}</Text>
 			</Text>
 			<View style={styles.buttonContainer}>
 				<TouchableOpacity style={styles.button} onPress={handleShare}>
@@ -65,6 +92,12 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 				</TouchableOpacity>
 				<TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDelete}>
 					<Text style={styles.buttonText}>Usuń</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={[styles.button, styles.downloadButton]} onPress={handleDownload}>
+					<Text style={styles.buttonText}>Pobierz</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={[styles.button, styles.downloadButton]} onPress={handleDownload}>
+					<Text style={styles.buttonText}>{link}</Text>
 				</TouchableOpacity>
 			</View>
 		</View>
@@ -101,6 +134,9 @@ const styles = StyleSheet.create({
 		backgroundColor: '#42608A',
 	},
 	deleteButton: {
+		backgroundColor: 'red',
+	},
+	downloadButton: {
 		backgroundColor: 'red',
 	},
 	buttonText: {

@@ -33,8 +33,9 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 
 	const handleLogin = async () => {
 		setLoading(true)
+		console.log(`${API_URL}/account/login`)
 		try {
-			const response = await fetch(`${API_URL}/login`, {
+			const response = await fetch(`${API_URL}/account/login`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
