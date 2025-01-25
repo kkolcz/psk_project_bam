@@ -26,6 +26,12 @@ interface Document {
 	isShared: string
 }
 
+interface IDownloadResponse {
+	fileName: string
+	contentType: string
+	base64Content: string
+}
+
 const DocDetails = ({ navigation, route }: RouterProps) => {
 	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
 	const { document } = route.params
@@ -66,10 +72,56 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 	}
 
 	const handleDownload = async () => {
-		const uri = `${API_URL}/files/download/${document.id}`
+		const uri = `${API_URL}/files/download-base64/7`
 		console.log('Download URI:', uri)
 
-		// DODAC LOGIKE POBIERANIA PLIKU
+		try {
+			const response = await fetch(`${uri}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			})
+
+			const data: IDownloadResponse = await response.json()
+			if (data && data.base64Content) {
+				const fileUri = `${FileSystem.cacheDirectory}${data.fileName}`
+
+				await FileSystem.writeAsStringAsync(fileUri, data.base64Content, {
+					encoding: FileSystem.EncodingType.Base64,
+				})
+
+				const { status } = await MediaLibrary.requestPermissionsAsync()
+
+				if (status === 'granted') {
+					const asset = await MediaLibrary.createAssetAsync(fileUri)
+					await MediaLibrary.createAlbumAsync('Download', asset, false)
+					Alert.alert('Sukces!', 'Plik został zapisany w pobranych.')
+				} else {
+					Alert.alert('Błąd', 'Nie przyznano uprawnień do zapisu.')
+				}
+			} else {
+				console.error('Brak danych base64 w odpowiedzi.')
+			}
+		} catch (error) {
+			console.error('Error Downloading:', error)
+			Alert.alert('Błąd', 'Nie udało się pobrać pliku.')
+		}
+	}
+
+	const saveBase64File = async (base64Data: string, fileName: string) => {
+		const uri = FileSystem.documentDirectory + fileName
+
+		try {
+			// Zapisanie pliku
+			await FileSystem.writeAsStringAsync(uri, base64Data, {
+				encoding: FileSystem.EncodingType.Base64,
+			})
+			console.log(`Plik zapisany pod ścieżką: ${uri}`)
+		} catch (error) {
+			console.error('Błąd podczas zapisywania pliku:', error)
+		}
 	}
 
 	const handleDelete = () => {
