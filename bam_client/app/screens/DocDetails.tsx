@@ -1,10 +1,11 @@
-import { View, Text, Button, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native'
+import { View, Text, Button, StyleSheet, TouchableOpacity, Alert, Platform, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { NavigationProp, RouteProp } from '@react-navigation/native'
 import * as FileSystem from 'expo-file-system'
 import * as MediaLibrary from 'expo-media-library'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
 import { useAuth } from '../context/AuthContext'
+import { StorageAccessFramework } from 'expo-file-system'
 
 interface RenderItem {
 	item: {
@@ -72,7 +73,7 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 	}
 
 	const handleDownload = async () => {
-		const uri = `${API_URL}/files/download-base64/7`
+		const uri = `${API_URL}/files/download-base64/${document.id}`
 		console.log('Download URI:', uri)
 
 		try {
@@ -88,21 +89,32 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 			if (data && data.base64Content) {
 				const fileUri = `${FileSystem.cacheDirectory}${data.fileName}`
 
+				console.log('File saved at:', fileUri)
+				const fileInfo = await FileSystem.getInfoAsync(fileUri)
+				console.log('File info:', fileInfo)
+
 				await FileSystem.writeAsStringAsync(fileUri, data.base64Content, {
 					encoding: FileSystem.EncodingType.Base64,
 				})
 
-				const { status } = await MediaLibrary.requestPermissionsAsync()
+				// const { status } = await MediaLibrary.requestPermissionsAsync()
 
-				if (status === 'granted') {
-					const asset = await MediaLibrary.createAssetAsync(fileUri)
-					await MediaLibrary.createAlbumAsync('Download', asset, false)
-					Alert.alert('Sukces!', 'Plik został zapisany w pobranych.')
-				} else {
-					Alert.alert('Błąd', 'Nie przyznano uprawnień do zapisu.')
+				const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync()
+				if (!permissions.granted) {
+					return
 				}
-			} else {
-				console.error('Brak danych base64 w odpowiedzi.')
+
+				try {
+					await StorageAccessFramework.createFileAsync(permissions.directoryUri, data.fileName, data.contentType)
+						.then(async uri => {
+							await FileSystem.writeAsStringAsync(uri, data.base64Content, { encoding: FileSystem.EncodingType.Base64 })
+						})
+						.catch(e => {
+							console.log(e)
+						})
+				} catch (e: any) {
+					console.log(e)
+				}
 			}
 		} catch (error) {
 			console.error('Error Downloading:', error)
