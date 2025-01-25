@@ -31,7 +31,12 @@ namespace API.Controllers
             if (!Directory.Exists(UploadDirectory))
                 Directory.CreateDirectory(UploadDirectory);
 
-            var filePath = Path.Combine(UploadDirectory, file.FileName);
+            string randomSuffix = Guid.NewGuid().ToString().Substring(0, 8);
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+            string fileExtension = Path.GetExtension(file.FileName);
+            string newFileName = $"{fileNameWithoutExtension}_{randomSuffix}{fileExtension}";
+
+            var filePath = Path.Combine(UploadDirectory, newFileName);
 
             await using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -48,7 +53,7 @@ namespace API.Controllers
 
             var fileEntity = new FileEntity
             {
-                FileName = file.FileName,
+                FileName = newFileName,
                 FilePath = filePath,
                 Checksum = checksum,
                 SizeInBytes = file.Length,
@@ -79,13 +84,13 @@ namespace API.Controllers
                 });
 
             var sharedWithUserFiles = context.SharedFiles
-                .Where(fs => fs.AccessedByUserId == UserId)
+                .Where(fs => fs.AccessedByUserId == UserId && fs.FileEntity.UploadedBy != User.Identity.Name)
                 .Select(fs => new
                 {
-                    fs.FileEntity.Id,
-                    fs.FileEntity.FileName,
-                    IsShared = true
-                });
+                      fs.FileEntity.Id,
+                      fs.FileEntity.FileName,
+                      IsShared = true
+                 });
 
             var allFiles = await userUploadedFiles
                 .Union(sharedWithUserFiles)
