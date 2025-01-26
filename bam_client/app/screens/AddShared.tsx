@@ -40,7 +40,7 @@ const AddShared = ({ navigation }: RouterProps) => {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Dodaj udostępniony</Text>
+			<Text style={styles.title}>Dodaj udostępniony dokument</Text>
 			<View style={styles.inputContainer}>
 				<Icon name='key' size={20} color='#000000' style={styles.icon} />
 				<TextInput

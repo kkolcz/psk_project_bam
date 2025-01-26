@@ -151,8 +151,41 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 	// }
 
 	const handleDelete = () => {
-		console.log('Usuń dokument')
-		navigation.goBack()
+		Alert.alert(
+			'Potwierdzenie usunięcia',
+			'Czy na pewno chcesz usunąć ten plik?',
+			[
+				{
+					text: 'Nie',
+					style: 'cancel',
+				},
+				{
+					text: 'Tak',
+					onPress: async () => {
+						try {
+							const response = await fetch(`${API_URL}/files/${document.id}`, {
+								method: 'DELETE',
+								headers: {
+									Authorization: `Bearer ${token}`,
+								},
+							})
+
+							if (response.ok) {
+								Alert.alert('Sukces', 'Plik został usunięty.')
+								navigation.goBack()
+							} else {
+								const errorData = await response.json()
+								Alert.alert('Błąd', errorData.message || 'Wystąpił błąd podczas usuwania pliku.')
+							}
+						} catch (error) {
+							console.error('Error deleting document:', error)
+							Alert.alert('Błąd', 'Wystąpił błąd podczas usuwania pliku. Spróbuj ponownie.')
+						}
+					},
+				},
+			],
+			{ cancelable: false }
+		)
 	}
 
 	const handleGoBack = () => {
@@ -168,7 +201,7 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 		<View style={styles.container}>
 			<Text style={styles.title}>Szczegóły dokumentu</Text>
 			<Text style={styles.label}>
-				Tytuł: <Text style={styles.value}>{document.title || 'Ważne dokumenty'}</Text>
+				Tytuł: <Text style={styles.value}>{document.title || 'Faktura za zakupy'}</Text>
 			</Text>
 			<Text style={styles.label}>
 				Nazwa: <Text style={styles.value}>{document.fileName}</Text>
@@ -180,7 +213,7 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 				Typ pliku: <Text style={styles.value}>{document.fileName.split('.').pop()}</Text>
 			</Text>
 			<Text style={styles.label}>
-				Data: <Text style={styles.value}>{document.isShared}</Text>
+				Data: <Text style={styles.value}>{document.isShared || '10.12.2024'}</Text>
 			</Text>
 			<View style={styles.controls}>
 				<View>

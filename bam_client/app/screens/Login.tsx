@@ -86,7 +86,7 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 				/>
 			</View>
 			<View style={styles.inputContainer}>
-				<Icon name='lock' size={20} color='#000000' style={styles.icon} />
+				<Icon name='lock' size={30} color='#000000' style={styles.icon} />
 				<TextInput
 					style={styles.input}
 					placeholder='Wprowadź hasło'

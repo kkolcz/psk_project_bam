@@ -123,8 +123,12 @@ function AppContent() {
 					</Stack.Screen>
 				) : (
 					<>
-						<Stack.Screen name='Login'>{props => <Login {...props} setIsLogged={setIsLogged} />}</Stack.Screen>
-						<Stack.Screen name='Register'>{props => <Register {...props} setIsLogged={setIsLogged} />}</Stack.Screen>
+						<Stack.Screen name='Login' options={{ headerShown: false }}>
+							{props => <Login {...props} setIsLogged={setIsLogged} />}
+						</Stack.Screen>
+						<Stack.Screen name='Register' options={{ headerShown: false }}>
+							{props => <Register {...props} setIsLogged={setIsLogged} />}
+						</Stack.Screen>
 					</>
 				)}
 			</Stack.Navigator>

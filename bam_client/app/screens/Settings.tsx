@@ -24,23 +24,27 @@ const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Moje dokumenty</Text>
+			<Text style={styles.title}>Ustawienia</Text>
 			<View>
 				<TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('')}>
-					<Icon name='lock' size={20} color='#FFFFFF' style={styles.icon} />
-					<Text style={styles.settingText}>Zmień hasło</Text>
+					<Icon name='envelope' size={17} color='#FFFFFF' style={[styles.icon, styles.changePassword]} />
+					<Text style={[styles.settingText]}>Zmień adres email</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('')}>
+					<Icon name='lock' size={27} color='#FFFFFF' style={[styles.icon, styles.changePassword]} />
+					<Text style={[styles.settingText]}>Zmień hasło</Text>
 				</TouchableOpacity>
 				<View style={styles.settingItem}>
-					<Icon name='bell' size={20} color='#FFFFFF' style={styles.icon} />
+					<Icon name='bell' size={21} color='#FFFFFF' style={styles.icon} />
 					<Text style={styles.settingText}>Powiadomienia</Text>
 					<Switch value={notificationsEnabled} onValueChange={toggleNotifications} style={styles.switch} />
 				</View>
 				<TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('')}>
-					<Icon name='user-secret' size={20} color='#FFFFFF' style={styles.icon} />
+					<Icon name='user-secret' size={24} color='#FFFFFF' style={styles.icon} />
 					<Text style={styles.settingText}>Ustawienia prywatności</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
-					<Icon name='sign-out' size={20} color='#FFFFFF' style={styles.icon} />
+					<Icon name='sign-out' size={24} color='#FFFFFF' style={styles.icon} />
 					<Text style={styles.settingText}>Wyloguj się</Text>
 				</TouchableOpacity>
 			</View>
@@ -104,6 +108,9 @@ const styles = StyleSheet.create({
 		height: 70,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	changePassword: {
+		marginLeft: 3,
 	},
 })
 

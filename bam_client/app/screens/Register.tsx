@@ -25,6 +25,8 @@ const saveRegisteredUser = async (username: string, token: string) => {
 }
 
 const Register = ({ navigation, setIsLogged }: RouterProps) => {
+	const [firstName, setFirstName] = useState('')
+	const [lastName, setLastName] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
@@ -40,7 +42,7 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 
 		setLoading(true)
 		try {
-			const response = await fetch(`${API_URL}/register`, {
+			const response = await fetch(`${API_URL}/account/register`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -72,6 +74,28 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 	return (
 		<View style={styles.container}>
 			<Image source={require('../../assets/cryptodocs.png')} style={styles.image} />
+			<View style={styles.userContainer}>
+				<View style={styles.inputContainer}>
+					<Icon name='user' size={30} color='#000000' style={styles.icon} />
+					<TextInput
+						style={styles.input}
+						placeholder='Wprowadź imię'
+						placeholderTextColor='#929292'
+						value={firstName}
+						onChangeText={setFirstName}
+					/>
+				</View>
+				<View style={styles.inputContainer}>
+					<Icon name='user' size={30} color='#000000' style={styles.icon} />
+					<TextInput
+						style={styles.input}
+						placeholder='Wprowadź nazwisko'
+						placeholderTextColor='#929292'
+						value={lastName}
+						onChangeText={setLastName}
+					/>
+				</View>
+			</View>
 			<View style={styles.inputContainer}>
 				<Icon name='envelope' size={20} color='#000000' style={styles.icon} />
 				<TextInput
@@ -85,7 +109,7 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 				/>
 			</View>
 			<View style={styles.inputContainer}>
-				<Icon name='lock' size={20} color='#000000' style={styles.icon} />
+				<Icon name='lock' size={30} color='#000000' style={styles.icon} />
 				<TextInput
 					style={styles.input}
 					placeholder='Wprowadź hasło'
@@ -96,7 +120,7 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 				/>
 			</View>
 			<View style={styles.inputContainer}>
-				<Icon name='lock' size={20} color='#000000' style={styles.icon} />
+				<Icon name='lock' size={30} color='#000000' style={styles.icon} />
 				<TextInput
 					style={styles.input}
 					placeholder='Potwierdź hasło'
@@ -170,6 +194,10 @@ const styles = StyleSheet.create({
 	},
 	buttons: {
 		width: '100%',
+	},
+	userContainer: {
+		width: '100%',
+		marginBottom: 20,
 	},
 })
 
