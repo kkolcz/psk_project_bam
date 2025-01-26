@@ -1,6 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native'
 import React, { useState } from 'react'
 import * as DocumentPicker from 'expo-document-picker'
+import * as FileSystem from 'expo-file-system'
 import { useAuth } from '../context/AuthContext'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
 import { NavigationProp } from '@react-navigation/native'
@@ -39,18 +40,32 @@ const SendDocument = ({ navigation }: RouterProps) => {
 			return
 		}
 
-		const formData = new FormData()
-		// formData.append('title', title)
-		const fileBlob = await fetch(file.uri).then(res => res.blob())
-		formData.append('file', fileBlob, file.name)
+		const fileBase64 = await FileSystem.readAsStringAsync(file.uri, {
+			encoding: FileSystem.EncodingType.Base64,
+		})
+
+		const fileBlob = await fetch(file.uri).then(res => {
+			return res.blob()
+		})
+
+		const endpoint = `${API_URL}/files`
+		console.log(endpoint)
+
+		const body = {
+			fileName: file.name,
+			base64Content: fileBase64,
+			contentType: fileBlob.type,
+		}
 
 		try {
-			const response = await fetch(`${API_URL}/files`, {
+			const response = await fetch(endpoint, {
 				method: 'POST',
+
 				headers: {
-					Authorization: `Bearer ${token}`, // Token autoryzacji
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
 				},
-				body: formData,
+				body: JSON.stringify(body),
 			})
 
 			if (response.ok) {
