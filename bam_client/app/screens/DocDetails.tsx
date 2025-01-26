@@ -1,30 +1,10 @@
-import {
-	View,
-	Text,
-	Button,
-	StyleSheet,
-	TouchableOpacity,
-	Alert,
-	Platform,
-	Linking,
-	Modal,
-	Clipboard,
-} from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform, Modal, Clipboard } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { NavigationProp, RouteProp } from '@react-navigation/native'
 import * as FileSystem from 'expo-file-system'
-import * as MediaLibrary from 'expo-media-library'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
 import { useAuth } from '../context/AuthContext'
 import { StorageAccessFramework } from 'expo-file-system'
-
-interface RenderItem {
-	item: {
-		id: string
-		fileName: string
-		isShared: string
-	}
-}
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
@@ -48,15 +28,11 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
 	const { document } = route.params
 	const [isShared, setIsShared] = useState(document.isShared ? true : false)
-	const [link, setLink] = useState('')
 	const { token } = useAuth()
 	const [modalVisible, setModalVisible] = useState(false)
 	const [accessCode, setAccessCode] = useState('')
 
-	useEffect(() => {
-		console.log(document.isShared)
-		console.log(isShared)
-	}, [])
+	useEffect(() => {}, [])
 
 	const handleShare = async () => {
 		setIsShared(!isShared)
@@ -111,8 +87,6 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 					encoding: FileSystem.EncodingType.Base64,
 				})
 
-				// const { status } = await MediaLibrary.requestPermissionsAsync()
-
 				const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync()
 				if (!permissions.granted) {
 					return
@@ -135,20 +109,6 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 			Alert.alert('Błąd', 'Nie udało się pobrać pliku.')
 		}
 	}
-
-	// const saveBase64File = async (base64Data: string, fileName: string) => {
-	// 	const uri = FileSystem.documentDirectory + fileName
-
-	// 	try {
-	// 		// Zapisanie pliku
-	// 		await FileSystem.writeAsStringAsync(uri, base64Data, {
-	// 			encoding: FileSystem.EncodingType.Base64,
-	// 		})
-	// 		console.log(`Plik zapisany pod ścieżką: ${uri}`)
-	// 	} catch (error) {
-	// 		console.error('Błąd podczas zapisywania pliku:', error)
-	// 	}
-	// }
 
 	const handleDelete = () => {
 		Alert.alert(
@@ -310,11 +270,8 @@ const styles = StyleSheet.create({
 	deleteButton: {
 		backgroundColor: 'red',
 	},
-	downloadButton: {
-		// backgroundColor: 'green',
-	},
+	downloadButton: {},
 	backButton: {
-		// backgroundColor: 'orange',
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 10,
@@ -366,7 +323,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	closeButton: {
-		// backgroundColor: 'red',
 		padding: 10,
 		borderRadius: 5,
 		width: '100%',
