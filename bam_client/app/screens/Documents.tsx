@@ -28,7 +28,6 @@ const Documents = ({ navigation }: RouterProps) => {
 	}, [])
 
 	const getFiles = async (token: string) => {
-		console.log(`${API_URL}/files`)
 		try {
 			const response = await fetch(`${API_URL}/files`, {
 				method: 'GET',
@@ -38,7 +37,6 @@ const Documents = ({ navigation }: RouterProps) => {
 			})
 
 			const data = await response.json()
-			console.log(data)
 			setDocuments(data)
 		} catch (error) {
 			console.error('Error fetching documents:', error)
@@ -69,7 +67,7 @@ const Documents = ({ navigation }: RouterProps) => {
 			</View>
 			<TouchableOpacity
 				style={styles.detailsButton}
-				onPress={() => navigation.navigate('DocDetails', { document: item })}>
+				onPress={() => navigation.navigate('DocDetails', { document: item, refreshDocuments: () => getFiles(token) })}>
 				<Text style={styles.detailsButtonText}>Szczegóły</Text>
 			</TouchableOpacity>
 		</View>

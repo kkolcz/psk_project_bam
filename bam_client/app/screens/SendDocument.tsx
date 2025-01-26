@@ -24,9 +24,9 @@ const SendDocument = ({ navigation }: RouterProps) => {
 			})
 
 			if (result.canceled) {
-				console.log('Wybór pliku anulowany.')
+				// console.log('Wybór pliku anulowany.')
 			} else {
-				console.log('Wybrano plik:', result.assets[0].uri)
+				// console.log('Wybrano plik:', result.assets[0].uri)
 				setFile(result.assets[0])
 			}
 		} catch (error) {
@@ -48,9 +48,6 @@ const SendDocument = ({ navigation }: RouterProps) => {
 			return res.blob()
 		})
 
-		const endpoint = `${API_URL}/files`
-		console.log(endpoint)
-
 		const body = {
 			fileName: file.name,
 			base64Content: fileBase64,
@@ -58,7 +55,7 @@ const SendDocument = ({ navigation }: RouterProps) => {
 		}
 
 		try {
-			const response = await fetch(endpoint, {
+			const response = await fetch(`${API_URL}/files`, {
 				method: 'POST',
 
 				headers: {

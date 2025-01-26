@@ -17,9 +17,9 @@ const Home = ({ navigation }: RouterProps) => {
 			})
 
 			if (result.canceled) {
-				console.log('Wybór pliku anulowany.')
+				// console.log('Wybór pliku anulowany.')
 			} else {
-				console.log('Wybrano plik:', result.assets[0].uri)
+				// console.log('Wybrano plik:', result.assets[0].uri)
 			}
 		} catch (error) {
 			console.error('Błąd przy wyborze pliku:', error)

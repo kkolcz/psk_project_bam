@@ -54,10 +54,11 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 
 			if (response.ok) {
 				saveRegisteredUser(data.username, data.token)
-				console.log('Rejestracja udana')
+				Alert.alert('Rejestracja udana', 'Zostałeś zarejestrowany.')
+				// console.log('Rejestracja udana')
 				setIsLogged(true)
 			} else {
-				Alert.alert('Rejestracja nieudana')
+				Alert.alert('Rejestracja nieudana', 'Wystąpił błąd. Spróbuj ponownie.')
 			}
 		} catch (error) {
 			console.error('Error registering:', error)

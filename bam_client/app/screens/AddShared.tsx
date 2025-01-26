@@ -16,7 +16,7 @@ const AddShared = ({ navigation }: RouterProps) => {
 	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
 
 	const handleAddDocument = async () => {
-		console.log('Dodaj dokument z kodem:', code)
+		// console.log('Dodaj dokument z kodem:', code)
 		try {
 			const response = await fetch(`${API_URL}/files/shared/${code}`, {
 				method: 'GET',

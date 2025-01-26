@@ -8,7 +8,7 @@ import { StorageAccessFramework } from 'expo-file-system'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
-	route: RouteProp<{ params: { document: Document } }, 'params'>
+	route: RouteProp<{ params: { document: Document; refreshDocuments: () => void } }, 'params'>
 }
 
 interface Document {
@@ -26,7 +26,7 @@ interface IDownloadResponse {
 
 const DocDetails = ({ navigation, route }: RouterProps) => {
 	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
-	const { document } = route.params
+	const { document, refreshDocuments } = route.params
 	const [isShared, setIsShared] = useState(document.isShared ? true : false)
 	const { token } = useAuth()
 	const [modalVisible, setModalVisible] = useState(false)
@@ -36,7 +36,6 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 
 	const handleShare = async () => {
 		setIsShared(!isShared)
-		console.log(isShared ? 'Przestań udostępniać' : 'Udostępnij')
 
 		try {
 			const response = await fetch(`${API_URL}/files/share/${document.id}`, {
@@ -64,7 +63,6 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 
 	const handleDownload = async () => {
 		const uri = `${API_URL}/files/download-base64/${document.id}`
-		console.log('Download URI:', uri)
 
 		try {
 			const response = await fetch(`${uri}`, {
@@ -78,10 +76,7 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 			const data: IDownloadResponse = await response.json()
 			if (data && data.base64Content) {
 				const fileUri = `${FileSystem.cacheDirectory}${data.fileName}`
-
-				console.log('File saved at:', fileUri)
 				const fileInfo = await FileSystem.getInfoAsync(fileUri)
-				console.log('File info:', fileInfo)
 
 				await FileSystem.writeAsStringAsync(fileUri, data.base64Content, {
 					encoding: FileSystem.EncodingType.Base64,
@@ -96,6 +91,7 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 					await StorageAccessFramework.createFileAsync(permissions.directoryUri, data.fileName, data.contentType)
 						.then(async uri => {
 							await FileSystem.writeAsStringAsync(uri, data.base64Content, { encoding: FileSystem.EncodingType.Base64 })
+							Alert.alert('Sukces', 'Plik został pomyślnie pobrany.')
 						})
 						.catch(e => {
 							console.log(e)
@@ -132,6 +128,7 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 
 							if (response.ok) {
 								Alert.alert('Sukces', 'Plik został usunięty.')
+								refreshDocuments() // Wywołaj callback, aby zaktualizować listę plików
 								navigation.goBack()
 							} else {
 								const errorData = await response.json()

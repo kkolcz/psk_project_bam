@@ -17,7 +17,7 @@ const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 	}
 
 	const handleLogout = async () => {
-		console.log('Wylogowano')
+		// console.log('Wylogowano')
 		await AsyncStorage.removeItem('userToken')
 		setIsLogged(false)
 	}

@@ -36,7 +36,6 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 
 	const handleLogin = async () => {
 		setLoading(true)
-		console.log(`${API_URL}/account/login`)
 		try {
 			const response = await fetch(`${API_URL}/account/login`, {
 				method: 'POST',
@@ -48,10 +47,8 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 			})
 
 			const data: ILoginResponse = await response.json()
-			console.log(data)
 
 			if (response.ok) {
-				console.log('Login successful')
 				setToken(data.token)
 				saveLoggedUser(data.username, data.token)
 				setIsLogged(true)
