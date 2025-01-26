@@ -16,40 +16,39 @@ import { AuthProvider, useAuth } from './app/context/AuthContext'
 import SendDocument from './app/screens/SendDocument'
 
 const Stack = createStackNavigator()
+const LoggedInStack = createStackNavigator()
 
-const InsideStack = createStackNavigator()
-
-function InsideLayout({ setIsLogged }: { setIsLogged: (value: boolean) => void }) {
+function Inside({ setIsLogged }: { setIsLogged: (value: boolean) => void }) {
 	const { token } = useAuth()
 
 	return (
-		<InsideStack.Navigator>
-			<InsideStack.Screen
+		<LoggedInStack.Navigator>
+			<LoggedInStack.Screen
 				name='Home'
 				component={Home}
-				options={{ headerShown: false, title: 'Start' }}></InsideStack.Screen>
-			<InsideStack.Screen name='Documents' options={{ headerShown: true, title: 'Dokumenty' }}>
+				options={{ headerShown: false, title: 'Start' }}></LoggedInStack.Screen>
+			<LoggedInStack.Screen name='Documents' options={{ headerShown: true, title: 'Dokumenty' }}>
 				{props => <Documents {...props} token={token} />}
-			</InsideStack.Screen>
-			<InsideStack.Screen
+			</LoggedInStack.Screen>
+			<LoggedInStack.Screen
 				name='DocDetails'
 				component={DocDetails as React.ComponentType<any>}
 				options={{ headerShown: false, title: 'Szczegóły' }}
 			/>
-			<InsideStack.Screen
+			<LoggedInStack.Screen
 				name='AddShared'
 				component={AddShared}
 				options={{ headerShown: false, title: 'Dodaj dokument' }}
 			/>
-			<InsideStack.Screen
+			<LoggedInStack.Screen
 				name='SendDocument'
 				component={SendDocument}
 				options={{ headerShown: false, title: 'Prześlij dokument' }}
 			/>
-			<InsideStack.Screen name='Settings' options={{ headerShown: false, title: 'Ustawienia' }}>
+			<LoggedInStack.Screen name='Settings' options={{ headerShown: false, title: 'Ustawienia' }}>
 				{props => <Settings {...props} setIsLogged={setIsLogged} />}
-			</InsideStack.Screen>
-		</InsideStack.Navigator>
+			</LoggedInStack.Screen>
+		</LoggedInStack.Navigator>
 	)
 }
 
@@ -116,10 +115,10 @@ function AppContent() {
 
 	return (
 		<NavigationContainer>
-			<Stack.Navigator initialRouteName={isLogged ? 'Inside' : 'Login'}>
+			<Stack.Navigator initialRouteName={isLogged ? 'LoggedIn' : 'Login'}>
 				{isLogged ? (
-					<Stack.Screen name='Inside' options={{ headerShown: false }}>
-						{props => <InsideLayout {...props} setIsLogged={setIsLogged} />}
+					<Stack.Screen name='LoggedIn' options={{ headerShown: false }}>
+						{props => <Inside {...props} setIsLogged={setIsLogged} />}
 					</Stack.Screen>
 				) : (
 					<>
