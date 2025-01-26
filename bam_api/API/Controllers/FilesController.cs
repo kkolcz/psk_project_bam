@@ -319,6 +319,34 @@ namespace API.Controllers
             return File(memory, file.ContentType, file.FileName);
         }
 
+        [HttpDelete("{fileId}")]
+        public async Task<IActionResult> DeleteFile(int fileId)
+        {
+            var file = await context.Files.FirstOrDefaultAsync(f => f.Id == fileId && f.UploadedBy == User.Identity.Name);
+
+            if (file == null)
+            {
+                return NotFound("nie znaleziono pliku");
+            }
+
+            if (System.IO.File.Exists(file.FilePath))
+            {
+                try
+                {
+                    System.IO.File.Delete(file.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"err {ex.Message}");
+                }
+            }
+
+            context.Files.Remove(file);
+
+            await context.SaveChangesAsync();
+
+            return Ok(new { message = "usunieto pomyslnie" });
+        }
 
 
 
