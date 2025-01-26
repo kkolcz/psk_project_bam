@@ -33,6 +33,7 @@ namespace API.Controllers
 
             string randomSuffix = Guid.NewGuid().ToString().Substring(0, 8);
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
+            fileNameWithoutExtension = fileNameWithoutExtension.Replace("%", "");
             string fileExtension = Path.GetExtension(file.FileName);
             string newFileName = $"{fileNameWithoutExtension}_{randomSuffix}{fileExtension}";
 
