@@ -28,7 +28,7 @@ const Home = ({ navigation }: RouterProps) => {
 
 	return (
 		<View style={styles.container}>
-			<Image source={require('../../assets/cryptodocs.png')} style={styles.image} />
+			<Image source={require('../../assets/cryptodocs.png')} resizeMode='contain' style={styles.image} />
 			<TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Documents')}>
 				<Icon name='file' size={20} color='#fff' />
 				<Text style={styles.buttonText}>Moje dokumenty</Text>
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 	image: {
 		width: 300,
 		height: 150,
-		marginTop: 50,
+		marginTop: 100,
 		marginBottom: 100,
 	},
 	button: {

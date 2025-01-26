@@ -3,8 +3,13 @@ import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useAuth } from '../context/AuthContext'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
+import { NavigationProp } from '@react-navigation/native'
 
-const AddShared = () => {
+interface RouterProps {
+	navigation: NavigationProp<any, any>
+}
+
+const AddShared = ({ navigation }: RouterProps) => {
 	const [code, setCode] = useState('')
 
 	const { token } = useAuth()
@@ -35,6 +40,7 @@ const AddShared = () => {
 
 	return (
 		<View style={styles.container}>
+			<Text style={styles.title}>Dodaj udostępniony</Text>
 			<View style={styles.inputContainer}>
 				<Icon name='key' size={20} color='#000000' style={styles.icon} />
 				<TextInput
@@ -45,9 +51,14 @@ const AddShared = () => {
 					onChangeText={setCode}
 				/>
 			</View>
-			<TouchableOpacity style={styles.button} onPress={handleAddDocument}>
-				<Text style={styles.buttonText}>Dodaj</Text>
-			</TouchableOpacity>
+			<View style={styles.controls}>
+				<TouchableOpacity style={styles.button} onPress={handleAddDocument}>
+					<Text style={styles.buttonText}>Dodaj</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={[styles.button, styles.backButton]} onPress={() => navigation.goBack()}>
+					<Text style={styles.buttonText}>Powrót</Text>
+				</TouchableOpacity>
+			</View>
 		</View>
 	)
 }
@@ -72,6 +83,18 @@ const styles = StyleSheet.create({
 	icon: {
 		marginRight: 10,
 	},
+	title: {
+		fontSize: 24,
+		fontWeight: 'bold',
+		color: '#FFFFFF',
+		marginBottom: 16,
+		textAlign: 'center',
+		marginTop: 50,
+	},
+	controls: {
+		flex: 1,
+		justifyContent: 'space-between',
+	},
 	input: {
 		flex: 1,
 		height: 40,
@@ -88,6 +111,12 @@ const styles = StyleSheet.create({
 	buttonText: {
 		color: '#FFFFFF',
 		fontSize: 16,
+	},
+	backButton: {
+		marginBottom: 50,
+		height: 70,
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 })
 

@@ -77,6 +77,7 @@ const Documents = ({ navigation }: RouterProps) => {
 
 	return (
 		<View style={styles.container}>
+			<Text style={styles.title}>Moje dokumenty</Text>
 			<FlatList data={documents} renderItem={renderItem} keyExtractor={item => item.id} />
 		</View>
 	)
@@ -87,6 +88,13 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 16,
 		backgroundColor: '#25293C',
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: 'bold',
+		color: '#FFFFFF',
+		marginBottom: 16,
+		textAlign: 'center',
 	},
 	itemContainer: {
 		flexDirection: 'row',

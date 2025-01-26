@@ -24,23 +24,31 @@ const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('ChangePassword')}>
-				<Icon name='lock' size={20} color='#FFFFFF' style={styles.icon} />
-				<Text style={styles.settingText}>Zmień hasło</Text>
-			</TouchableOpacity>
-			<View style={styles.settingItem}>
-				<Icon name='bell' size={20} color='#FFFFFF' style={styles.icon} />
-				<Text style={styles.settingText}>Powiadomienia</Text>
-				<Switch value={notificationsEnabled} onValueChange={toggleNotifications} style={styles.switch} />
+			<Text style={styles.title}>Moje dokumenty</Text>
+			<View>
+				<TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('')}>
+					<Icon name='lock' size={20} color='#FFFFFF' style={styles.icon} />
+					<Text style={styles.settingText}>Zmień hasło</Text>
+				</TouchableOpacity>
+				<View style={styles.settingItem}>
+					<Icon name='bell' size={20} color='#FFFFFF' style={styles.icon} />
+					<Text style={styles.settingText}>Powiadomienia</Text>
+					<Switch value={notificationsEnabled} onValueChange={toggleNotifications} style={styles.switch} />
+				</View>
+				<TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('')}>
+					<Icon name='user-secret' size={20} color='#FFFFFF' style={styles.icon} />
+					<Text style={styles.settingText}>Ustawienia prywatności</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
+					<Icon name='sign-out' size={20} color='#FFFFFF' style={styles.icon} />
+					<Text style={styles.settingText}>Wyloguj się</Text>
+				</TouchableOpacity>
 			</View>
-			<TouchableOpacity style={styles.settingItem} onPress={() => navigation.navigate('PrivacySettings')}>
-				<Icon name='user-secret' size={20} color='#FFFFFF' style={styles.icon} />
-				<Text style={styles.settingText}>Ustawienia prywatności</Text>
-			</TouchableOpacity>
-			<TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
-				<Icon name='sign-out' size={20} color='#FFFFFF' style={styles.icon} />
-				<Text style={styles.settingText}>Wyloguj się</Text>
-			</TouchableOpacity>
+			<View>
+				<TouchableOpacity style={[styles.button, styles.buttonBack]} onPress={() => navigation.goBack()}>
+					<Text style={styles.buttonText}>Powrót</Text>
+				</TouchableOpacity>
+			</View>
 		</View>
 	)
 }
@@ -50,6 +58,15 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 16,
 		backgroundColor: '#25293C',
+		justifyContent: 'space-between',
+	},
+	title: {
+		fontSize: 24,
+		fontWeight: 'bold',
+		color: '#FFFFFF',
+		marginBottom: 16,
+		textAlign: 'center',
+		marginTop: 50,
 	},
 	settingItem: {
 		flexDirection: 'row',
@@ -57,6 +74,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 15,
 		borderBottomWidth: 1,
 		borderBottomColor: '#ccc',
+		height: 70,
 	},
 	icon: {
 		marginRight: 10,
@@ -68,6 +86,24 @@ const styles = StyleSheet.create({
 	},
 	switch: {
 		marginLeft: 'auto',
+	},
+	button: {
+		width: '100%',
+		marginTop: 12,
+		padding: 10,
+		alignItems: 'center',
+		borderRadius: 5,
+		backgroundColor: '#42608A',
+	},
+	buttonText: {
+		color: '#FFFFFF',
+		fontSize: 16,
+	},
+	buttonBack: {
+		marginBottom: 50,
+		height: 70,
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 })
 

@@ -24,12 +24,29 @@ function InsideLayout({ setIsLogged }: { setIsLogged: (value: boolean) => void }
 
 	return (
 		<InsideStack.Navigator>
-			<InsideStack.Screen name='Home' component={Home} />
-			<InsideStack.Screen name='Documents'>{props => <Documents {...props} token={token} />}</InsideStack.Screen>
-			<InsideStack.Screen name='DocDetails' component={DocDetails as React.ComponentType<any>} />
-			<InsideStack.Screen name='AddShared' component={AddShared} />
-			<InsideStack.Screen name='SendDocument' component={SendDocument} />
-			<InsideStack.Screen name='Settings'>
+			<InsideStack.Screen
+				name='Home'
+				component={Home}
+				options={{ headerShown: false, title: 'Start' }}></InsideStack.Screen>
+			<InsideStack.Screen name='Documents' options={{ headerShown: true, title: 'Dokumenty' }}>
+				{props => <Documents {...props} token={token} />}
+			</InsideStack.Screen>
+			<InsideStack.Screen
+				name='DocDetails'
+				component={DocDetails as React.ComponentType<any>}
+				options={{ headerShown: false, title: 'Szczegóły' }}
+			/>
+			<InsideStack.Screen
+				name='AddShared'
+				component={AddShared}
+				options={{ headerShown: false, title: 'Dodaj dokument' }}
+			/>
+			<InsideStack.Screen
+				name='SendDocument'
+				component={SendDocument}
+				options={{ headerShown: false, title: 'Prześlij dokument' }}
+			/>
+			<InsideStack.Screen name='Settings' options={{ headerShown: false, title: 'Ustawienia' }}>
 				{props => <Settings {...props} setIsLogged={setIsLogged} />}
 			</InsideStack.Screen>
 		</InsideStack.Navigator>
