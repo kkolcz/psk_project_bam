@@ -25,6 +25,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadFile(IFormFile file)
         {
+            var allowedExtensions = new List<string> { ".jpg", ".png", ".pdf", ".docx" };
+            string fileExtension = Path.GetExtension(file.FileName);
+
+            if (!allowedExtensions.Contains(fileExtension.ToLower()))
+                return BadRequest("Nieakceptowalny typ pliku ");
+
             if (file == null || file.Length == 0)
                 return BadRequest("nie przesano pliku");
 
@@ -34,7 +40,6 @@ namespace API.Controllers
             string randomSuffix = Guid.NewGuid().ToString().Substring(0, 8);
             string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file.FileName);
             fileNameWithoutExtension = fileNameWithoutExtension.Replace("%", "");
-            string fileExtension = Path.GetExtension(file.FileName);
             string newFileName = $"{fileNameWithoutExtension}_{randomSuffix}{fileExtension}";
 
             var filePath = Path.Combine(UploadDirectory, newFileName);
