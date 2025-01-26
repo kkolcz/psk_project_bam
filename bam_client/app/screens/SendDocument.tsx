@@ -3,8 +3,13 @@ import React, { useState } from 'react'
 import * as DocumentPicker from 'expo-document-picker'
 import { useAuth } from '../context/AuthContext'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
+import { NavigationProp } from '@react-navigation/native'
 
-const SendDocument = () => {
+interface RouterProps {
+	navigation: NavigationProp<any, any>
+}
+
+const SendDocument = ({ navigation }: RouterProps) => {
 	const [title, setTitle] = useState('')
 	const { token } = useAuth()
 	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
@@ -62,15 +67,22 @@ const SendDocument = () => {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.label}>Tytuł</Text>
+			<Text style={styles.title}>Prześlij dokument</Text>
 			<TextInput style={styles.input} placeholder='Wprowadź tytuł' value={title} onChangeText={setTitle} />
-			<TouchableOpacity style={styles.button} onPress={pickDocument}>
-				<Text style={styles.buttonText}>Wybierz plik</Text>
-			</TouchableOpacity>
-			{file && <Text style={styles.fileName}>filename</Text>}
-			<TouchableOpacity style={styles.button} onPress={handleSendDocument}>
-				<Text style={styles.buttonText}>Wyślij</Text>
-			</TouchableOpacity>
+			<View style={styles.controls}>
+				<View>
+					<TouchableOpacity style={styles.button} onPress={pickDocument}>
+						<Text style={styles.buttonText}>Wybierz plik</Text>
+					</TouchableOpacity>
+					{file && <Text style={styles.fileName}>Wybrano plik: {file.name}</Text>}
+					<TouchableOpacity style={styles.button} onPress={handleSendDocument}>
+						<Text style={styles.buttonText}>Wyślij</Text>
+					</TouchableOpacity>
+				</View>
+				<TouchableOpacity style={[styles.button, styles.backButton]} onPress={() => navigation.goBack()}>
+					<Text style={styles.buttonText}>Powrót</Text>
+				</TouchableOpacity>
+			</View>
 		</View>
 	)
 }
@@ -81,10 +93,13 @@ const styles = StyleSheet.create({
 		padding: 16,
 		backgroundColor: '#25293C',
 	},
-	label: {
-		fontSize: 16,
+	title: {
+		fontSize: 24,
+		fontWeight: 'bold',
 		color: '#FFFFFF',
-		marginBottom: 8,
+		marginBottom: 16,
+		textAlign: 'center',
+		marginTop: 50,
 	},
 	input: {
 		height: 40,
@@ -95,6 +110,16 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		backgroundColor: '#FFFFFF',
 		color: '#000000',
+	},
+	backButton: {
+		marginBottom: 50,
+		height: 70,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	controls: {
+		flex: 1,
+		justifyContent: 'space-between',
 	},
 	button: {
 		padding: 10,
