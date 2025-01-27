@@ -45,7 +45,6 @@ const Login = ({ navigation, setIsLogged }: RouterProps) => {
 				mode: 'cors',
 				body: JSON.stringify({ username: email, password: password }),
 			})
-
 			const data: ILoginResponse = await response.json()
 
 			if (response.ok) {
