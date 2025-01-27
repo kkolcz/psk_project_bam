@@ -3,11 +3,14 @@ import React, { useState } from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { NavigationProp } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useAuth } from '../context/AuthContext'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
 	setIsLogged: (value: boolean) => void
 }
+
+const { setToken } = useAuth()
 
 const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 	const [notificationsEnabled, setNotificationsEnabled] = useState(false)
@@ -19,6 +22,7 @@ const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 	const handleLogout = async () => {
 		// console.log('Wylogowano')
 		await AsyncStorage.removeItem('userToken')
+		setToken('')
 		setIsLogged(false)
 	}
 

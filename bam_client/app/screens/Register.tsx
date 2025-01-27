@@ -4,6 +4,7 @@ import { NavigationProp } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { API_URL_ANDROID, API_URL_WEB } from '@env'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useAuth } from '../context/AuthContext'
 
 interface RouterProps {
 	navigation: NavigationProp<any, any>
@@ -34,6 +35,8 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 
 	const API_URL = Platform.OS === 'android' ? API_URL_ANDROID : API_URL_WEB
 
+	const { setToken } = useAuth()
+
 	const handleRegister = async () => {
 		if (password !== confirmPassword) {
 			Alert.alert('Rejestracja nieudana', 'Hasła nie są zgodne')
@@ -53,10 +56,11 @@ const Register = ({ navigation, setIsLogged }: RouterProps) => {
 			const data: IRegisterResponse = await response.json()
 
 			if (response.ok) {
+				setToken(data.token)
 				saveRegisteredUser(data.username, data.token)
+				setIsLogged(true)
 				Alert.alert('Rejestracja udana', 'Zostałeś zarejestrowany.')
 				// console.log('Rejestracja udana')
-				setIsLogged(true)
 			} else {
 				Alert.alert('Rejestracja nieudana', 'Wystąpił błąd. Spróbuj ponownie.')
 			}
