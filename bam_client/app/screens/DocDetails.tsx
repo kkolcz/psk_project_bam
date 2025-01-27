@@ -76,7 +76,6 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 			const data: IDownloadResponse = await response.json()
 			if (data && data.base64Content) {
 				const fileUri = `${FileSystem.cacheDirectory}${data.fileName}`
-				const fileInfo = await FileSystem.getInfoAsync(fileUri)
 
 				await FileSystem.writeAsStringAsync(fileUri, data.base64Content, {
 					encoding: FileSystem.EncodingType.Base64,
@@ -128,7 +127,7 @@ const DocDetails = ({ navigation, route }: RouterProps) => {
 
 							if (response.ok) {
 								Alert.alert('Sukces', 'Plik został usunięty.')
-								refreshDocuments() // Wywołaj callback, aby zaktualizować listę plików
+								refreshDocuments()
 								navigation.goBack()
 							} else {
 								const errorData = await response.json()
