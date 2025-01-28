@@ -10,8 +10,6 @@ interface RouterProps {
 	setIsLogged: (value: boolean) => void
 }
 
-const { setToken } = useAuth()
-
 const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 	const [notificationsEnabled, setNotificationsEnabled] = useState(false)
 
@@ -22,7 +20,6 @@ const Settings = ({ navigation, setIsLogged }: RouterProps) => {
 	const handleLogout = async () => {
 		// console.log('Wylogowano')
 		await AsyncStorage.removeItem('userToken')
-		setToken('')
 		setIsLogged(false)
 	}
 
